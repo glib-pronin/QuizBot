@@ -1,0 +1,55 @@
+{
+  "title": "Основи python",
+  "questions": [
+    {
+      "question": "Який символ використовується для коментарів у Python?",
+      "answers": ["а) //", "б) /* */", "в) #", "г) --"],
+      "correct_answer": "в) #"
+    },
+    {
+      "question": "Який тип даних у Python є логічним?",
+      "answers": ["а) int", "б) bool", "в) str", "г) list"],
+      "correct_answer": "б) bool"
+    },
+    {
+      "question": "Що виведе команда print(2 ** 3)?",
+      "answers": ["а) 6", "б) 8", "в) 9", "г) 5"],
+      "correct_answer": "б) 8"
+    },
+    {
+      "question": "Який метод додає елемент у список?",
+      "answers": ["а) add()", "б) append()", "в) insert()", "г) push()"],
+      "correct_answer": "б) append()"
+    },
+    {
+      "question": "Як створити функцію в Python?",
+      "answers": ["а) func my_func():", "б) define my_func():", "в) def my_func():", "г) function my_func():"],
+      "correct_answer": "в) def my_func():"
+    },
+    {
+      "question": "Що означає len()?",
+      "answers": ["а) Обчислити довжину", "б) Порахувати елементи з початку", "в) Змінити список", "г) Видалити елемент"],
+      "correct_answer": "а) Обчислити довжину"
+    },
+    {
+      "question": "Який цикл в Python використовується для повторення по елементах?",
+      "answers": ["а) while", "б) repeat", "в) for", "г) loop"],
+      "correct_answer": "в) for"
+    },
+    {
+      "question": "Що виведе print('Hello ' + 'World')?",
+      "answers": ["а) Hello World", "б) Hello+World", "в) HelloWorld", "г) Hello World+"],
+      "correct_answer": "а) Hello World"
+    },
+    {
+      "question": "Що буде результатом: `bool('')`?",
+      "answers": ["а) True", "б) False", "в) ''", "г) None"],
+      "correct_answer": "б) False"
+    },
+    {
+      "question": "Який оператор порівняння перевіряє на рівність?",
+      "answers": ["а) =", "б) ==", "в) ===", "г) !="],
+      "correct_answer": "б) =="
+    }
+  ]
+}
