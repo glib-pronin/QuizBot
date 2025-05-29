@@ -1,6 +1,10 @@
-from modules import *
+from modules import dispatcher, bot
+import aiogram
 
 async def main():
     await dispatcher.start_polling(bot)
 
-aiogram._asyncio.run(main())
+try:
+    aiogram._asyncio.run(main())
+except KeyboardInterrupt:
+    print("Бот завершив роботу!")
