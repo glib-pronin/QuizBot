@@ -1,14 +1,17 @@
-from aiogram.filters import Filter
+from aiogram.filters import BaseFilter
 from aiogram.types import Message
 from .settings import students
 
 # Фільтр для перевірки стану студента
-class StudentStateFilter(Filter):
+class StudentStateFilter(BaseFilter):
     def __init__(self, state: str):
         self.state = state
 
     async def __call__(self, message: Message):
-        student_state = students.get(message.from_user.id).get('state')
+        student = students.get(message.from_user.id)
+        if not student:
+            return False
+        student_state =  student.get('state')
         return self.state == student_state
 
 
