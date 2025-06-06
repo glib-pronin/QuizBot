@@ -21,7 +21,6 @@ async def showquizzes_handler(message: Message):
     else:
         await message.answer('У вас немає прав для цієї команди')
 
-
 # Хендлер для натискання кнопок вибору тесту
 @router_start_test.callback_query(ChooseTest.filter())
 async def callback_test_handler(callback: CallbackQuery, callback_data: ChooseTest):

@@ -1,4 +1,5 @@
 from .settings import active_tests
+from .filter import StartTest
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 import json, random
 
@@ -11,7 +12,7 @@ def get_test_start_msg(code: str):
         students = test_code.get("connected_students")
         connected_students = '\n'.join([students[id]['name'] for id in students])
         test_start_msg = f'Тест: {title}\n\nКод підключення: {code}\n\nСписок підключених студентів:\n{connected_students}'
-        kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='Розпочати тест', callback_data=f'start_{test_id}')]])
+        kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='Розпочати тест', callback_data=StartTest(code=code, test_id=test_id).pack())]])
         return test_start_msg, kb
 
 # Функція, яка завантажує певний json-файл
