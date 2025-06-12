@@ -5,10 +5,11 @@ bot = aiogram.Bot('')
 # Створюємо об'єкт класу Dispatcher
 dispatcher = aiogram.Dispatcher()   
 
+
 # Словник з активними тестами та службовою інформацією про них
 """ Структура словника active_tests
 active_tests = {
-    "код_тесту": {
+    "code": {
         "test": Назва тесту,
         "test_id": Назва файлу,
         "admin_id": ID адміна,
@@ -33,14 +34,3 @@ active_tests = {
 }"""
 active_tests = {}
 
-router_join = aiogram.Router()
-dispatcher.include_router(router=router_join)
-
-router_command = aiogram.Router()
-dispatcher.include_router(router=router_command)
-
-router_start_test = aiogram.Router()
-dispatcher.include_router(router=router_start_test)
-
-router_testing = aiogram.Router()
-dispatcher.include_router(router=router_testing)

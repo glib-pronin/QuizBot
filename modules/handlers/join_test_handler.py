@@ -1,9 +1,12 @@
-from ..settings import dispatcher, active_tests, bot, router_join
+from ..settings import active_tests, bot
 from ..filter import TestConnection
 from ..utils import get_test_start_msg
+from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
+
+router_join = Router()
 
 # Хендлер для команди /join
 @router_join.message(Command('join'))
@@ -39,6 +42,9 @@ async def entering_name_handler(message: Message, state: FSMContext):
     data = await state.get_data()
     code = data.get('code')
     await state.clear()
+    if code not in active_tests:
+        await message.answer(f"❗️ Тест було скасовано адміністратором, він ще не встиг розпочатися.")
+        return
     active_tests[code]['connected_students'][id]={"name": student_name}
     admin_msg, kb = get_test_start_msg(code)
     print(active_tests)

@@ -1,7 +1,9 @@
-from ..settings import dispatcher, router_command
 from ..permission import isAdmin
+from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import CommandStart 
+
+router_command = Router()
 
 # Хендлер для команди /start
 @router_command.message(CommandStart())

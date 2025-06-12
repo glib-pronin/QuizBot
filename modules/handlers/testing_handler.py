@@ -1,10 +1,13 @@
-from ..settings import router_testing, active_tests, bot
+from ..settings import  active_tests, bot
 from ..filter import StartTest, TestAnswer, NextQuestion, CompleteTest
 from ..utils import load_file
 from ..permission import isAdmin
-from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
-from aiogram import F
+from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
+from aiogram.filters import Command
+from aiogram import F, Router
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+
+router_testing = Router()
 
 # Хендлер для натискання кнопки початку тесту
 @router_testing.callback_query(StartTest.filter())
@@ -120,44 +123,73 @@ async def send_question(code: str, question_index: int):
 async def complete_test_handler(callback: CallbackQuery, callback_data: CompleteTest):
     if isAdmin(callback):
         code = callback_data.code
-        questions = active_tests[code]['questions']
-        students = active_tests[code]['connected_students']
-        total_questions = len(questions)
-        student_results = []
-        student_results_percentage = []
-        # Перевіряємо відповіді кожного студента
-        for id, student in students.items():
-            score = 0
-            student_answers = student['answers']
-            answers_analysis = []
-            ind = 0
-            for question in questions:
-                correct_answer = question['correct_answer']
-                student_answer = student_answers.get(ind)
-                # Якщо відповіді збігаються
-                if student_answer == correct_answer:
-                    score += 1
-                    answers_analysis.append(f'\n{ind+1} {question['question']}\n✅ {student_answer} - ваша відповідь')
-                # Якщо студент не надав відповіді
-                elif not student_answer:
-                    answers_analysis.append(f'\n{ind+1} {question['question']}\n❌ Ви не відповіли на це питання\n✅ Правильна відповідь: {correct_answer}')
-                # Якщо відповідь не правильна
-                else:
-                    answers_analysis.append(f'\n{ind+1} {question['question']}\n❌ {student_answer} - ваша відповідь\n✅ Правильна відповідь: {correct_answer}')
-                ind += 1
-            # Формуємо повідомлення студенту та відправляємо
-            score_str = f'{score}/{total_questions}'
-            await bot.edit_message_text(
-                chat_id=id, message_id=student['message_id'], 
-                text=f'Тест завершено!🎉\n\nВаш результат: {score_str}\n\nАналіз відповідей:\n{'\n'.join(answers_analysis)}')
-            student_results.append(f'🟢 {student['name']} - {score_str}')
-            student_results_percentage.append(round(score / total_questions * 100, 2))
-        # Відправляємо повідомлення адміну зі статистикою та результатами кожного студента 
-        average_score = round(sum(student_results_percentage)/len(student_results_percentage), 2)
-        await bot.edit_message_text(
-            chat_id=active_tests[code]['admin_id'], message_id=active_tests[code]['admin_msg'],
-            text=f'Тест завершено!🎉\n\nСередній бал: {average_score}%\n\nрезультати студентів:\n{'\n'.join(student_results)}'
-        )
-        del active_tests[code] # Видаляємо інформацію про тест
+        await finish_test(code)
     else: 
         await callback.message.answer('У вас немає прав для цієї команди')
+
+# Хендлер для примусового завершення тесту за допомогою команди /stop
+@router_testing.message(Command('stop'))
+async def stop_tests_handler(message: Message):
+    if isAdmin(message):
+        codes = [code for code in active_tests if active_tests[code]['admin_id']==message.from_user.id]
+        if len(codes) == 0:
+            await message.answer('У вас немає активних тестів!')
+            return
+        for code in codes:
+           await finish_test(code, forced=True)
+    else: 
+        await message.answer('У вас немає прав для цієї команди')
+# Функція для завершення тесту (також враховує варіант передчасного завершення)
+async def finish_test(code: str, forced: bool = False):
+    questions = active_tests[code].get('questions')
+    # Перевіряємо, чи розпочався тест з цим кодом
+    if not questions:
+        await bot.send_message(
+            chat_id=active_tests[code]['admin_id'], 
+            text=f"❗️ Тест із кодом <b>{code}</b> було скасовано — він ще не розпочався.", parse_mode='HTML')
+        for id in active_tests[code]['connected_students']:
+            await bot.send_message(chat_id=id, text=f"❗️ Тест '{active_tests[code]['test']}' було скасовано адміністратором, він ще не встиг розпочатися.")
+        del active_tests[code]
+        return
+    students = active_tests[code]['connected_students']
+    current_question = active_tests[code]['current_question']
+    total_questions = len(questions)
+    student_results = []
+    student_results_percentage = []
+    # Перевіряємо відповіді кожного студента
+    for id, student in students.items():
+        score = 0
+        student_answers = student['answers']
+        answers_analysis = []
+        ind = 0
+        for question in questions:
+            if forced and ind > current_question:
+                break 
+            correct_answer = question['correct_answer']
+            student_answer = student_answers.get(ind)
+            # Якщо відповіді збігаються
+            if student_answer == correct_answer:
+                score += 1
+                answers_analysis.append(f'\n{ind+1} {question['question']}\n✅ {student_answer} - ваша відповідь')
+            # Якщо студент не надав відповіді
+            elif not student_answer:
+                answers_analysis.append(f'\n{ind+1} {question['question']}\n❌ Ви не відповіли на це питання\n✅ Правильна відповідь: {correct_answer}')
+            # Якщо відповідь не правильна
+            else:
+                answers_analysis.append(f'\n{ind+1} {question['question']}\n❌ {student_answer} - ваша відповідь\n✅ Правильна відповідь: {correct_answer}')
+            ind += 1
+        # Формуємо повідомлення студенту та відправляємо
+        score_str = f'{score}/{current_question+1 if forced else total_questions}'
+        await bot.edit_message_text(
+            chat_id=id, message_id=student['message_id'], 
+            text=f"{'❗️Тест було достроково завершено адміністратором.' if forced else 'Тест завершено!🎉'}\n\nВаш результат: {score_str}\n\nАналіз відповідей:\n{'\n'.join(answers_analysis)}")
+        student_results.append(f'🟢 {student['name']} - {score_str}')
+        student_results_percentage.append(round(score / (current_question if forced else total_questions) * 100, 2))
+    # Відправляємо повідомлення адміну зі статистикою та результатами кожного студента 
+    average_score = round(sum(student_results_percentage)/len(student_results_percentage), 2)
+    await bot.edit_message_text(
+        chat_id=active_tests[code]['admin_id'], message_id=active_tests[code]['admin_msg'],
+        text=f"{'❗️Тест із кодом ' + code + ' було достроково завершено.'if forced else 'Тест завершено!🎉'}\n\nСередній бал: {average_score}%\n\nрезультати студентів:\n{'\n'.join(student_results)}"
+    )
+    del active_tests[code] # Видаляємо інформацію про тест
+

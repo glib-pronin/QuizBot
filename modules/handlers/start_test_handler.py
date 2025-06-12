@@ -1,11 +1,14 @@
-from ..settings import dispatcher, active_tests, router_start_test
+from ..settings import active_tests
 from ..permission import isAdmin
 from ..filter import ChooseTest
 from ..utils import get_test_start_msg, load_file, generate_unique_code
+from aiogram import Router
 from aiogram.types import Message, CallbackQuery, InlineKeyboardButton
 from aiogram.filters import Command
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 import os
+
+router_start_test = Router()
 
 # Хендлер для команди /showquizzes (тільки для адмінів)
 @router_start_test.message(Command('showquizzes'))
