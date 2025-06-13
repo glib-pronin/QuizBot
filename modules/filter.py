@@ -22,6 +22,10 @@ class NextQuestion(CallbackData, prefix='next'):
 class CompleteTest(CallbackData, prefix='complete'):
     code: str
 
+class ShowResults(CallbackData, prefix='show_result'):
+    id: int
+    
+
 class TestConnection(StatesGroup):
     code = State()
     name = State()

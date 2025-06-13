@@ -1,6 +1,7 @@
 from ..settings import active_tests, bot
 from ..filter import TestConnection
 from ..utils import get_test_start_msg
+from ..db import Session, Student
 from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import Command
@@ -11,6 +12,13 @@ router_join = Router()
 # Хендлер для команди /join
 @router_join.message(Command('join'))
 async def join_hendler(message: Message, state: FSMContext):
+    with Session() as session:
+        student = session.query(Student).filter_by(telegram_id=message.from_user.id).count()
+        if student == 0:
+            session.add(Student(telegram_id=message.from_user.id))
+            print(f"Студент з id {message.from_user.id} доданий.")
+            session.commit()
+            
     await message.answer('Введіть код підключення до тесту')
     await state.set_state(TestConnection.code)
     await state.update_data(code=3)      

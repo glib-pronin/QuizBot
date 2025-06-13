@@ -1,6 +1,6 @@
 from ..settings import  active_tests, bot
 from ..filter import StartTest, TestAnswer, NextQuestion, CompleteTest
-from ..utils import load_file
+from ..utils import load_file, add_student_result
 from ..permission import isAdmin
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
 from aiogram.filters import Command
@@ -185,6 +185,11 @@ async def finish_test(code: str, forced: bool = False):
             text=f"{'❗️Тест було достроково завершено адміністратором.' if forced else 'Тест завершено!🎉'}\n\nВаш результат: {score_str}\n\nАналіз відповідей:\n{'\n'.join(answers_analysis)}")
         student_results.append(f'🟢 {student['name']} - {score_str}')
         student_results_percentage.append(round(score / (current_question if forced else total_questions) * 100, 2))
+        # Виклик функції для занесення результатів в бд
+        add_student_result(
+            student_id=id, test_name=active_tests[code]['test'],
+            student_name=student['name'], answers='\n'.join(answers_analysis), result=score_str,
+            interrupted=forced)
     # Відправляємо повідомлення адміну зі статистикою та результатами кожного студента 
     average_score = round(sum(student_results_percentage)/len(student_results_percentage), 2)
     await bot.edit_message_text(

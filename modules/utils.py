@@ -1,5 +1,6 @@
 from .settings import active_tests
 from .filter import StartTest
+from .db import Session, Student, Result
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 import json, random
 
@@ -27,4 +28,17 @@ def generate_unique_code():
         if not code in active_tests:
             return code
 
+# Функція, яка результати проходження тесту до бд
+def add_student_result(student_id: int, test_name: str, student_name: str, answers: str, result: str, interrupted: bool ):
+    with Session() as session:
+        student = session.query(Student).filter_by(telegram_id = student_id).first()
+        if not student:
+            print(f"Помилка: Студента з telegram_id {student_id} не знайдено.")
+            return
+        result = Result(
+            test_name = test_name, answers = answers, grade = result, 
+            interrupted = interrupted, student_name = student_name, student = student)
+        print(f'Результати студента з id {student_id} додано.')
+        session.add(result)
+        session.commit()
 
