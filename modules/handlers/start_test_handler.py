@@ -38,7 +38,7 @@ async def callback_test_handler(callback: CallbackQuery, callback_data: ChooseTe
             'admin_id': callback.from_user.id,
             'connected_students': {}
         }
-        admin_msg, kb = get_test_start_msg(connect_code)
+        admin_msg, kb = await get_test_start_msg(connect_code)
         await callback.answer('')
         msg = await callback.message.answer(admin_msg, reply_markup=kb)
         active_tests[connect_code]['message_id'] = msg.message_id

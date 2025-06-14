@@ -54,7 +54,7 @@ async def entering_name_handler(message: Message, state: FSMContext):
         await message.answer(f"❗️ Тест було скасовано адміністратором, він ще не встиг розпочатися.")
         return
     active_tests[code]['connected_students'][id]={"name": student_name}
-    admin_msg, kb = get_test_start_msg(code)
+    admin_msg, kb = await get_test_start_msg(code)
     print(active_tests)
     await bot.edit_message_text(
         chat_id=active_tests[code]['admin_id'], message_id=active_tests[code]['message_id'], 

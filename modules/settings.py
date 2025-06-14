@@ -22,6 +22,7 @@ active_tests = {
                 "name": "Ім'я",
                 "message_id": ID повідомлення з питанням,
                 "answered": False/True,
+                "msg_ids_to_delete": []
                 "answers": {
                     "question_index": answer
                     ... 

@@ -41,4 +41,4 @@ async def show_result_handler(callback: CallbackQuery, callback_data: ShowResult
     with Session() as session:
         result = session.query(Result).filter_by(id = callback_data.id).first()
     await callback.answer()
-    await callback.message.answer(text=f"<b>Тест:</b> {result.test_name}\n\n<b>Дата та час:</b> {result.end_time}\n\n<b>Результат:</b> {result.grade}\n\n<b>Чи був перерваний:</b> {'Так' if result.interrupted else 'Ні'}\n\n<b>Ваші ім'я, під яким проходили тест:</b> {result.student_name}\n\n<b>Аналіз відповідей:</b> {result.answers}", parse_mode="HTML")
+    await callback.message.answer(text=f"<b>Тест:</b> {result.test_name}\n\n<b>Дата та час:</b> {result.end_time}\n\n<b>Результат:</b> {result.grade}\n\n<b>Чи був перерваний:</b> {'Так' if result.interrupted else 'Ні'}\n\n<b>Ваші ім'я, під яким проходили тест:</b> {result.student_name}\n\n<b>Аналіз відповідей:</b>\n{result.answers}", parse_mode="HTML")
