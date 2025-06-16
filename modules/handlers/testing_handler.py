@@ -71,6 +71,7 @@ async def next_question_handler(callback: CallbackQuery, callback_data: NextQues
     else:
         await callback.message.answer('У вас немає прав для цієї команди')
 
+
 # Хендлер для state answering
 @router_testing.message(EnterAnswer.answering)
 async def entering_answer_handler(message: Message, state: FSMContext):
@@ -83,6 +84,13 @@ async def entering_answer_handler(message: Message, state: FSMContext):
     msg = await message.answer('Ваша відповідь прийнята. Чекайте дій від адміністратора.')
     active_tests[code]['connected_students'][message.from_user.id]['msg_ids_to_delete'] = [msg.message_id, message.message_id]
     await show_answered_student(code, question_index)
+
+# Хендлер для state ready
+@router_testing.message(EnterAnswer.ready)
+async def inactive_entering_handler(message: Message, state: FSMContext):
+    data = await state.get_data()
+    code = data.get('code')
+    active_tests[code]['connected_students'][message.from_user.id]['msg_ids_to_delete'].append(message.message_id)
 
 # Функція відправки питання студенту
 async def send_question(code: str, question_index: int):

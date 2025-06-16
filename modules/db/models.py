@@ -6,7 +6,7 @@ Base = declarative_base()
 
 # Функція, яка надає час проходження тесту без секунд та мілісекунд 
 def get_time_without_seconds():
-    return datetime.datetime.utcnow().replace(second=0, microsecond=0)
+    return (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=3)).replace(second=0, microsecond=0)  
 
 # Модель таблиці результатів проходження тестів
 class Result(Base):

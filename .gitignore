@@ -3,3 +3,4 @@ venv/
 data.db
 test.py
 data.db
+.env

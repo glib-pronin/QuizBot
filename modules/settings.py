@@ -1,7 +1,13 @@
 import aiogram
+import os
+from dotenv import load_dotenv
 
+# Завантажую змінні з /env
+load_dotenv()
+
+bot_token = os.getenv("BOT_TOKEN")
 # Створюємо об'єкт класу Bot
-bot = aiogram.Bot('')
+bot = aiogram.Bot(bot_token)
 # Створюємо об'єкт класу Dispatcher
 dispatcher = aiogram.Dispatcher()   
 
