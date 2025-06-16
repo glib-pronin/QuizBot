@@ -92,9 +92,12 @@ def isAdmin(message: Message):
 1. клонування репозиторію:
 git clone <тут посилання>
 cd quizbot
-2. Встановлення залежностей:
+
+3. Встановлення залежностей:
 pip install -r requirements.txt
-3. Налаштування .env:
+
+5. Налаштування .env:
 BOT_TOKEN=your_telegram_token_here
-4. Запуск:
+
+7. Запуск:
 python main.py
