@@ -112,3 +112,8 @@ BOT_TOKEN=your_telegram_token_here
 ```
 python main.py
 ```
+
+5. Створення таблиць:
+```
+python -m modules.bd.database
+```
